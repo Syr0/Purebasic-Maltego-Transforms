@@ -43,15 +43,17 @@ Procedure AddMaltegoCustomEntity(Type.s,Value.s,Map *AdditionalFields.Field(), L
   ;Additional dynamic properties
   CopyMap(*AdditionalFields(),MaltegoReturnEntities()\AdditionalFields())
   
-  ;Label on Arrow:
-  MaltegoReturnEntities()\AdditionalFields("link#maltego.link.label")\DisplayName = "link#maltego.link.label"
-  MaltegoReturnEntities()\AdditionalFields("link#maltego.link.label")\Value = LinkLabel
-  MaltegoReturnEntities()\AdditionalFields("link#maltego.link.label")\MatchingRule = #MaltegoType_MatchingRule
-  
-  MaltegoReturnEntities()\AdditionalFields("link#maltego.link.show-label")\DisplayName = "link#maltego.link.show-label"
-  MaltegoReturnEntities()\AdditionalFields("link#maltego.link.show-label")\Value = "1"
-  MaltegoReturnEntities()\AdditionalFields("link#maltego.link.show-label")\MatchingRule = #MaltegoType_MatchingRule
-  
+  If Len(LinkLabel) > 0
+    ;Label on Arrow:
+    MaltegoReturnEntities()\AdditionalFields("link#maltego.link.label")\DisplayName = "link#maltego.link.label"
+    MaltegoReturnEntities()\AdditionalFields("link#maltego.link.label")\Value = LinkLabel
+    MaltegoReturnEntities()\AdditionalFields("link#maltego.link.label")\MatchingRule = #MaltegoType_MatchingRule
+    
+    MaltegoReturnEntities()\AdditionalFields("link#maltego.link.show-label")\DisplayName = "link#maltego.link.show-label"
+    MaltegoReturnEntities()\AdditionalFields("link#maltego.link.show-label")\Value = "1"
+    MaltegoReturnEntities()\AdditionalFields("link#maltego.link.show-label")\MatchingRule = #MaltegoType_MatchingRule
+  EndIf
+
 EndProcedure
 
 ;{ Templates
@@ -71,11 +73,34 @@ EndProcedure
 
 ;}
 
-If Debugmode = 1
-  For x = 0 To CountProgramParameters()
-    MessageRequester("",ProgramParameter())
+Structure Properties
+  Map Property.s()
+EndStructure
+
+Structure InputParams
+  List Params.Properties()
+EndStructure
+
+Procedure Maltego_ReadInput(*Input.InputParams)
+  For x = 1 To CountProgramParameters()
+    
+    Param$ = ProgramParameter()
+    If FindString(Param$,"=")
+      For y = 1 To CountString(Param$,"#")+1
+        AddElement(*Input\Params())
+        tempString.s = StringField(Param$,y,"#")
+        a.s = StringField(tempString,1,"=")
+        b.s = StringField(tempString,2,"=")
+        *Input\Params()\Property(a) = b
+      Next
+      
+    Else
+      AddElement(*Input\Params())
+      *Input\Params()\Property(Param$) = Param$
+    EndIf
   Next
-EndIf
+  
+EndProcedure
 
 ;{ Documentation
 ;Param 1 = "Hans Wurst"
@@ -111,7 +136,7 @@ Procedure.s CreateMaltegoStdoutXml()
   ProcedureReturn result$
 EndProcedure
 
-NewMap AdditionalFields.Field()
+; NewMap AdditionalFields.Field()
 ; AdditionalFields("Age")\DisplayName = "Age"
 ; AdditionalFields("Age")\Value = "45"
 ; AdditionalFields("Age")\MatchingRule = #MaltegoType_MatchingRule
@@ -120,19 +145,22 @@ NewMap AdditionalFields.Field()
 ; AdditionalFields("HairColor")\Value = "Blond"
 ; AdditionalFields("HairColor")\MatchingRule = #MaltegoType_MatchingRule
 
-AddMaltegoCustomEntity(#MaltegoType_Person,"Hans Wurst",AdditionalFields(),"Geiler Scheiss")
-Maltego_PersonEnrichEntity(#MaltegoType_Person,"Hans Wurst","Hans","Wurst",1)
+; AddMaltegoCustomEntity(#MaltegoType_Person,"Hans Wurst",AdditionalFields(),"Geiler Scheiss")
+; Maltego_PersonEnrichEntity(#MaltegoType_Person,"Hans Wurst","Hans","Wurst",1)
 ; Output
 
+Procedure Maltego_Output()
 MaltegoXmlStdOutString.s = CreateMaltegoStdoutXml()
 Print(MaltegoXmlStdOutString)
 FlushFileBuffers_(GetStdHandle_(#STD_OUTPUT_HANDLE))
+EndProcedure
 
 ; IDE Options = PureBasic 6.00 LTS (Windows - x64)
 ; ExecutableFormat = Console
-; CursorPosition = 85
-; Folding = c-
+; CursorPosition = 47
+; FirstLine = 18
+; Folding = i-
 ; EnableThread
 ; EnableXP
 ; DPIAware
-; Executable = TestTransform2.exe
+; Executable = ..\Bitmasker\IACR-Scaper\IACR_StudentToPublicationTransform.exe
