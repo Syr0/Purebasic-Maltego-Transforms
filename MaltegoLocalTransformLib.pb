@@ -29,8 +29,6 @@ Structure MaltegoEntity
   VisibleConnectionLabelIndex.i
 EndStructure
 
-Debugmode = 0
-
 Global NewList MaltegoReturnEntities.MaltegoEntity()
 
 Procedure AddMaltegoCustomEntity(Type.s,Value.s,Map *AdditionalFields.Field(), LinkLabel.s="",Weight=0)
@@ -157,9 +155,8 @@ EndProcedure
 
 ; IDE Options = PureBasic 6.00 LTS (Windows - x64)
 ; ExecutableFormat = Console
-; CursorPosition = 47
-; FirstLine = 18
-; Folding = i-
+; CursorPosition = 5
+; Folding = B9
 ; EnableThread
 ; EnableXP
 ; DPIAware
